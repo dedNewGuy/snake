@@ -40,6 +40,7 @@ int main(void)
 		.x = 10, .y = 10,
 		.w = 20, .h = 20
 	};
+	float box_speed = 200;
 
 	while (running) {
 		SDL_Event event;
@@ -49,8 +50,10 @@ int main(void)
 		deltatime = (SDL_GetTicks() - last_frame_tick) / 1000.0f;
 		last_frame_tick = SDL_GetTicks();
 
-		if (is_left_pressed) box.x -= 1;
-		if (is_right_pressed) box.x += 1;
+		if (is_left_pressed) box.x -= box_speed * deltatime;
+		if (is_right_pressed) box.x += box_speed * deltatime;
+		if (is_up_pressed) box.y -= box_speed * deltatime;
+		if (is_down_pressed) box.y += box_speed * deltatime;
 
 		SDL_SetRenderDrawColor(renderer,
                    0x00, 0x00, 0x00,
