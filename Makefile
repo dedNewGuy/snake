@@ -7,7 +7,7 @@ SRCS = src/main.cpp
 all: $(TARGET)
 
 $(TARGET): $(SRCS)
-	$(CXX) $(CXX_FLAGS) -o $(TARGET) $(SRCS)
+	$(CXX) $(CXX_FLAGS) -o $(TARGET) $(SRCS) -lSDL2
 
 .PHONY: all run
 run:
