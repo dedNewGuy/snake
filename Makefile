@@ -1,13 +1,13 @@
-CXX = g++
-CXX_FLAGS = -Wall -Wextra
+CC = gcc
+CFLAGS = -Wall -Wextra
 
 TARGET = snake
-SRCS = src/main.cpp
+SRCS = src/main.c
 
 all: $(TARGET)
 
 $(TARGET): $(SRCS)
-	$(CXX) $(CXX_FLAGS) -o $(TARGET) $(SRCS) -lSDL2
+	$(CC) $(CFLAGS) -o $(TARGET) $(SRCS) -lSDL2
 
 .PHONY: all run
 run:

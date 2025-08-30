@@ -1,4 +1,4 @@
-#include <iostream>
+#include <stdbool.h>
 #include <SDL2/SDL.h>
 
 #define WIN_TITLE "Snake"
@@ -38,6 +38,19 @@ int main(void)
 			switch (event.type) {
 				case SDL_QUIT:
 					running = false;
+					break;
+				case SDL_KEYDOWN:
+					switch (event.key.keysym.sym) {
+						case SDLK_q:
+							running = false;
+							break;
+						default:
+							break;
+					}
+					break;
+				case SDL_KEYUP:
+					break;
+				default:
 					break;
 			}
 		}
