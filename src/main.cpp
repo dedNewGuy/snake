@@ -10,6 +10,8 @@ int main(void)
 	SDL_Window *window = NULL;
 	SDL_Renderer *renderer = NULL;
 
+	bool running = true;
+
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
 		SDL_Log("Failed to init SDL: %s\n", SDL_GetError());
 		return 1;
@@ -23,5 +25,18 @@ int main(void)
 	}
 	SDL_SetWindowTitle(window, WIN_TITLE);
 
+	while (running) {
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+					running = false;
+					break;
+			}
+		}
+	}
+
+	SDL_DestroyWindow(window);
+	SDL_DestroyRenderer(renderer);
 	return 0;
 }
