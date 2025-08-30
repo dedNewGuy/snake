@@ -27,6 +27,13 @@ int main(void)
 
 	while (running) {
 		SDL_Event event;
+
+		SDL_SetRenderDrawColor(renderer,
+                   0x00, 0x00, 0x00,
+                   SDL_ALPHA_OPAQUE);
+		SDL_RenderClear(renderer);
+		SDL_RenderPresent(renderer);
+
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 				case SDL_QUIT:
