@@ -10,6 +10,11 @@ int main(void)
 	SDL_Window *window = NULL;
 	SDL_Renderer *renderer = NULL;
 
+	bool is_up_pressed = false;
+	bool is_down_pressed = false;
+	bool is_left_pressed = false;
+	bool is_right_pressed = false;
+
 	bool running = true;
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
@@ -25,13 +30,27 @@ int main(void)
 	}
 	SDL_SetWindowTitle(window, WIN_TITLE);
 
+	SDL_Rect box = {
+		.x = 10, .y = 10,
+		.w = 20, .h = 20
+	};
+
 	while (running) {
 		SDL_Event event;
+
+		if (is_left_pressed) box.x -= 1;
+		if (is_right_pressed) box.x += 1;
 
 		SDL_SetRenderDrawColor(renderer,
                    0x00, 0x00, 0x00,
                    SDL_ALPHA_OPAQUE);
 		SDL_RenderClear(renderer);
+
+		SDL_SetRenderDrawColor(renderer,
+                   0xFF, 0x00, 0x00,
+                   SDL_ALPHA_OPAQUE);
+		SDL_RenderFillRect(renderer, &box);
+
 		SDL_RenderPresent(renderer);
 
 		while (SDL_PollEvent(&event)) {
@@ -41,6 +60,18 @@ int main(void)
 					break;
 				case SDL_KEYDOWN:
 					switch (event.key.keysym.sym) {
+						case SDLK_LEFT:
+							is_left_pressed = true;
+							break;
+						case SDLK_RIGHT:
+							is_right_pressed = true;
+							break;
+						case SDLK_UP:
+							is_up_pressed = true;
+							break;
+						case SDLK_DOWN:
+							is_down_pressed = true;
+							break;
 						case SDLK_q:
 							running = false;
 							break;
@@ -49,6 +80,22 @@ int main(void)
 					}
 					break;
 				case SDL_KEYUP:
+					switch (event.key.keysym.sym) {
+						case SDLK_LEFT:
+							is_left_pressed = false;
+							break;
+						case SDLK_RIGHT:
+							is_right_pressed = false;
+							break;
+						case SDLK_UP:
+							is_up_pressed = false;
+							break;
+						case SDLK_DOWN:
+							is_down_pressed = false;
+							break;
+						default:
+							break;
+					}
 					break;
 				default:
 					break;
