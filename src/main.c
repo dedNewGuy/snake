@@ -16,6 +16,8 @@
 typedef struct snake {
 	SDL_FRect head;
 	SDL_FRect *body;
+	float head_last_x;
+	float head_last_y;
 	int body_capacity;
 	int body_count;
 } snake_t;
@@ -52,16 +54,27 @@ void snake_append_body(snake_t *snake)
 	}
 	SDL_FRect body = {0};
 	body.w = body.h = 20;
-	SDL_FRect last_body = snake->body[snake->body_count];
+	SDL_FRect last_body = {};
 	if (snake->body_count == 0) {
 		last_body = snake->head;
 	} else {
-		last_body = snake->body[snake->body_count];
+		last_body = snake->body[snake->body_count - 1];
 	}
-	body.x = last_body.x - 20;
-	body.y = last_body.y - 20;
+	body.x = last_body.x;
+	body.y = last_body.y;
 	snake->body[snake->body_count] = body;
 	snake->body_count++;
+}
+
+void snake_update_body(snake_t *snake)
+{
+    for (int i = snake->body_count - 1; i > 0; --i) {
+        snake->body[i].x = snake->body[i - 1].x;
+        snake->body[i].y = snake->body[i - 1].y;
+    }
+
+    snake->body[0].x = snake->head_last_x;
+    snake->body[0].y = snake->head_last_y;
 }
 
 void snake_render(SDL_Renderer *renderer, snake_t *snake)
@@ -126,9 +139,10 @@ int main(void)
 		.x = 0, .y = 0,
 		.w = 20, .h = 20
 	};
-	int rand_range = WIN_WIDTH / box.w - 1; 
-	food.x = (float)((rand() % rand_range) * 20);
-	food.y = (float)((rand() % rand_range) * 20);
+	int rand_range_x = WIN_WIDTH / box.w - 1; 
+	int rand_range_y = WIN_HEIGHT / box.w - 1; 
+	food.x = (float)((rand() % rand_range_x) * 20);
+	food.y = (float)((rand() % rand_range_y) * 20);
 
 	SDL_FRect result = {};
 
@@ -143,12 +157,16 @@ int main(void)
 		snake_dump(&snake);
 		snake_update_time_acc += deltatime;
 		if (snake_update_time_acc >= UPDATE_SNAKE_RATE) {
+			snake.head_last_x = snake.head.x;
+			snake.head_last_y = snake.head.y;
+			snake_update_body(&snake);
 			if (is_left_pressed) snake.head.x -= box_speed;
 			if (is_right_pressed) snake.head.x += box_speed;
 			if (is_up_pressed) snake.head.y -= box_speed;
 			if (is_down_pressed) snake.head.y += box_speed;
 			snake_update_time_acc = 0;
 		}
+
 
 		if (snake.head.x < 0) {
 			snake.head.x = WIN_WIDTH - snake.head.w;
@@ -163,8 +181,8 @@ int main(void)
 		if (SDL_IntersectFRect(&snake.head,
 						 &food,
 						 &result)) {
-			food.x = (float)((rand() % rand_range) * 20);
-			food.y = (float)((rand() % rand_range) * 20);
+			food.x = (float)((rand() % rand_range_x) * 20);
+			food.y = (float)((rand() % rand_range_y) * 20);
 			snake_append_body(&snake);
 		}
 
@@ -182,6 +200,8 @@ int main(void)
 						 0xFF, 0x00, 0x00,
 						 SDL_ALPHA_OPAQUE);
 		SDL_RenderFillRectF(renderer, &food);
+		SDL_Log("Food Position x: %f\n", food.x);
+		SDL_Log("Food Position y: %f\n", food.y);
 
 		SDL_RenderPresent(renderer);
 
