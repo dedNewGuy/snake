@@ -170,11 +170,11 @@ int main(void)
 
 		if (snake.head.x < 0) {
 			snake.head.x = WIN_WIDTH - snake.head.w;
-		} else if (snake.head.x > WIN_WIDTH) {
+		} else if (snake.head.x > WIN_WIDTH - snake.head.w) {
 			snake.head.x = 0;
 		} else if (snake.head.y < 0) {
 			snake.head.y = WIN_HEIGHT - snake.head.h;
-		} else if (snake.head.y > WIN_HEIGHT) {
+		} else if (snake.head.y > WIN_HEIGHT - snake.head.h) {
 			snake.head.y = 0;
 		}
 
