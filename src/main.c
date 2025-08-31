@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <time.h>
@@ -95,14 +96,15 @@ void snake_dump(snake_t *snake)
 	SDL_Log("Snake last body y: %f\n", last_body.y);
 }
 
-void snake_handle_body_intersect(snake_t *snake)
+bool snake_handle_body_intersect(snake_t *snake)
 {
 	SDL_FRect res = {0};
 	for (int i = 2; i < snake->body_count; ++i) {
 		if (SDL_IntersectFRect(&snake->body[i], &snake->head, &res)) {
-			SDL_Log("LOSE!");
+			return true;
 		}
 	}
+	return false;
 }
 
 int main(void)
@@ -191,7 +193,12 @@ int main(void)
 			food.y = (float)((rand() % rand_range_y) * 20);
 			snake_append_body(&snake);
 		}
-		snake_handle_body_intersect(&snake);
+		if (snake_handle_body_intersect(&snake)) {
+			running = false;
+			printf("=================\n");
+			printf("You Lose! HAH!!\n");
+			break;
+		}
 
 		// Clear Background
 		SDL_SetRenderDrawColor(renderer,
