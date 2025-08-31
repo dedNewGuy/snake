@@ -14,6 +14,14 @@
 
 #define UPDATE_SNAKE_RATE 0.10
 
+typedef enum direction {
+	DIR_LEFT,
+	DIR_RIGHT,
+	DIR_UP,
+	DIR_DOWN,
+	UNDEFINED,
+} direction_t;
+
 typedef struct snake {
 	SDL_FRect head;
 	SDL_FRect *body;
@@ -113,10 +121,7 @@ int main(void)
 	SDL_Window *window = NULL;
 	SDL_Renderer *renderer = NULL;
 
-	bool is_up_pressed = false;
-	bool is_down_pressed = false;
-	bool is_left_pressed = false;
-	bool is_right_pressed = false;
+	direction_t dir = UNDEFINED;
 
 	bool running = true;
 
@@ -168,10 +173,22 @@ int main(void)
 		snake_update_time_acc += deltatime;
 		if (snake_update_time_acc >= UPDATE_SNAKE_RATE) {
 			snake_update_body(&snake);
-			if (is_left_pressed) snake.head.x -= box_speed;
-			if (is_right_pressed) snake.head.x += box_speed;
-			if (is_up_pressed) snake.head.y -= box_speed;
-			if (is_down_pressed) snake.head.y += box_speed;
+			switch (dir) {
+				case DIR_LEFT:
+					snake.head.x -= box_speed;
+					break;
+				case DIR_RIGHT:
+					snake.head.x += box_speed;
+					break;
+				case DIR_UP:
+					snake.head.y -= box_speed;
+					break;
+				case DIR_DOWN:
+					snake.head.y += box_speed;
+					break;
+				default:
+					break;
+			}
 			snake_update_time_acc = 0;
 		}
 
@@ -227,36 +244,16 @@ int main(void)
 				case SDL_KEYDOWN:
 					switch (event.key.keysym.sym) {
 						case SDLK_LEFT:
-							if (!is_right_pressed) {
-								is_left_pressed = true;
-								is_up_pressed = false;
-								is_down_pressed = false;
-								is_right_pressed = false;
-							}
+							if (dir != DIR_RIGHT) dir = DIR_LEFT;
 							break;
 						case SDLK_RIGHT:
-							if (!is_left_pressed) {
-								is_left_pressed = false;
-								is_up_pressed = false;
-								is_down_pressed = false;
-								is_right_pressed = true;
-							}
+							if (dir != DIR_LEFT) dir = DIR_RIGHT;
 							break;
 						case SDLK_UP:
-							if (!is_down_pressed) {
-								is_left_pressed = false;
-								is_up_pressed = true;
-								is_down_pressed = false;
-								is_right_pressed = false;
-							}
+							if (dir != DIR_DOWN) dir = DIR_UP;
 							break;
 						case SDLK_DOWN:
-							if (!is_up_pressed) {
-								is_left_pressed = false;
-								is_up_pressed = false;
-								is_down_pressed = true;
-								is_right_pressed = false;
-							}
+							if (dir != DIR_UP) dir = DIR_DOWN;
 							break;
 						case SDLK_q:
 							running = false;
@@ -264,8 +261,6 @@ int main(void)
 						default:
 							break;
 					}
-					break;
-				case SDL_KEYUP:
 					break;
 				default:
 					break;
