@@ -11,7 +11,7 @@
 #define FPS 60
 #define FRAMERATE (1000 / FPS)
 
-#define UPDATE_SNAKE_RATE 0.25
+#define UPDATE_SNAKE_RATE 0.10
 
 typedef struct snake {
 	SDL_FRect head;
@@ -22,7 +22,7 @@ typedef struct snake {
 
 snake_t snake_new()
 {
-	snake_t snake = {};
+	snake_t snake = {0};
 	snake.head = (SDL_FRect) {
 		.x = 0, .y = 0,
 		.w = 20, .h = 20
@@ -40,6 +40,48 @@ snake_t snake_new()
 void snake_free(snake_t *snake)
 {
 	free(snake->body);
+}
+
+void snake_append_body(snake_t *snake)
+{
+	if (snake->body_count + 1 >= snake->body_capacity) {
+		snake->body_capacity *= 2;
+		SDL_FRect *body_realloc = realloc(snake->body, sizeof(snake->body_capacity));
+		assert(body_realloc != NULL);
+		snake->body = body_realloc;
+	}
+	SDL_FRect body = {0};
+	body.w = body.h = 20;
+	SDL_FRect last_body = snake->body[snake->body_count];
+	if (snake->body_count == 0) {
+		last_body = snake->head;
+	} else {
+		last_body = snake->body[snake->body_count];
+	}
+	body.x = last_body.x - 20;
+	body.y = last_body.y - 20;
+	snake->body[snake->body_count] = body;
+	snake->body_count++;
+}
+
+void snake_render(SDL_Renderer *renderer, snake_t *snake)
+{
+	SDL_SetRenderDrawColor(renderer,
+						0x00, 0xFF, 0x00,
+						SDL_ALPHA_OPAQUE);
+	SDL_RenderFillRectF(renderer, &snake->head);
+	for (int i = 0; i < snake->body_count; ++i) {
+		SDL_RenderFillRectF(renderer, &snake->body[i]);
+	}
+}
+
+void snake_dump(snake_t *snake)
+{
+	SDL_Log("Snake body capacity: %d\n", snake->body_capacity);
+	SDL_Log("Snake body count: %d\n", snake->body_count);
+	SDL_FRect last_body = snake->body[snake->body_count - 1];
+	SDL_Log("Snake last body x: %f\n", last_body.x);
+	SDL_Log("Snake last body y: %f\n", last_body.y);
 }
 
 int main(void)
@@ -98,30 +140,32 @@ int main(void)
 		deltatime = (SDL_GetTicks() - last_frame_tick) / 1000.0f;
 		last_frame_tick = SDL_GetTicks();
 
+		snake_dump(&snake);
 		snake_update_time_acc += deltatime;
 		if (snake_update_time_acc >= UPDATE_SNAKE_RATE) {
-			if (is_left_pressed) box.x -= box_speed;
-			if (is_right_pressed) box.x += box_speed;
-			if (is_up_pressed) box.y -= box_speed;
-			if (is_down_pressed) box.y += box_speed;
+			if (is_left_pressed) snake.head.x -= box_speed;
+			if (is_right_pressed) snake.head.x += box_speed;
+			if (is_up_pressed) snake.head.y -= box_speed;
+			if (is_down_pressed) snake.head.y += box_speed;
 			snake_update_time_acc = 0;
 		}
 
-		if (box.x < 0) {
-			box.x = WIN_WIDTH - box.w;
-		} else if (box.x > WIN_WIDTH) {
-			box.x = 0;
-		} else if (box.y < 0) {
-			box.y = WIN_HEIGHT - box.h;
-		} else if (box.y > WIN_HEIGHT) {
-			box.y = 0;
+		if (snake.head.x < 0) {
+			snake.head.x = WIN_WIDTH - snake.head.w;
+		} else if (snake.head.x > WIN_WIDTH) {
+			snake.head.x = 0;
+		} else if (snake.head.y < 0) {
+			snake.head.y = WIN_HEIGHT - snake.head.h;
+		} else if (snake.head.y > WIN_HEIGHT) {
+			snake.head.y = 0;
 		}
 
-		if (SDL_IntersectFRect(&box,
+		if (SDL_IntersectFRect(&snake.head,
 						 &food,
 						 &result)) {
 			food.x = (float)((rand() % rand_range) * 20);
 			food.y = (float)((rand() % rand_range) * 20);
+			snake_append_body(&snake);
 		}
 
 		// Clear Background
@@ -131,10 +175,7 @@ int main(void)
 		SDL_RenderClear(renderer);
 
 		// Render Snake
-		SDL_SetRenderDrawColor(renderer,
-						 0x00, 0xFF, 0x00,
-						 SDL_ALPHA_OPAQUE);
-		SDL_RenderFillRectF(renderer, &box);
+		snake_render(renderer, &snake);
 
 		// Render food
 		SDL_SetRenderDrawColor(renderer,
