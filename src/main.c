@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <assert.h>
 #include <stdlib.h>
 #include <time.h>
 #include <SDL2/SDL.h>
@@ -11,6 +12,35 @@
 #define FRAMERATE (1000 / FPS)
 
 #define UPDATE_SNAKE_RATE 0.25
+
+typedef struct snake {
+	SDL_FRect head;
+	SDL_FRect *body;
+	int body_capacity;
+	int body_count;
+} snake_t;
+
+snake_t snake_new()
+{
+	snake_t snake = {};
+	snake.head = (SDL_FRect) {
+		.x = 0, .y = 0,
+		.w = 20, .h = 20
+	};
+
+	snake.body_capacity = 20;
+	snake.body_count = 0;
+	SDL_FRect *body = calloc(snake.body_capacity, sizeof(SDL_FRect));
+	assert(body != NULL);
+	snake.body = body;
+
+	return snake;
+}
+
+void snake_free(snake_t *snake)
+{
+	free(snake->body);
+}
 
 int main(void)
 {
@@ -34,12 +64,14 @@ int main(void)
 	}
 
 	if (SDL_CreateWindowAndRenderer(
-        WIN_WIDTH, WIN_HEIGHT, 0,
-        &window, &renderer) < 0) {
+		WIN_WIDTH, WIN_HEIGHT, 0,
+		&window, &renderer) < 0) {
 		SDL_Log("Failed to create window and renderer SDL: %s\n", SDL_GetError());
 		return 1;
 	}
 	SDL_SetWindowTitle(window, WIN_TITLE);
+
+	snake_t snake = snake_new();
 
 	SDL_FRect box = {
 		.x = 0, .y = 0,
@@ -86,28 +118,28 @@ int main(void)
 		}
 
 		if (SDL_IntersectFRect(&box,
-                            &food,
-                            &result)) {
+						 &food,
+						 &result)) {
 			food.x = (float)((rand() % rand_range) * 20);
 			food.y = (float)((rand() % rand_range) * 20);
 		}
 
 		// Clear Background
 		SDL_SetRenderDrawColor(renderer,
-                   0x00, 0x00, 0x00,
-                   SDL_ALPHA_OPAQUE);
+						 0x00, 0x00, 0x00,
+						 SDL_ALPHA_OPAQUE);
 		SDL_RenderClear(renderer);
 
 		// Render Snake
 		SDL_SetRenderDrawColor(renderer,
-                   0x00, 0xFF, 0x00,
-                   SDL_ALPHA_OPAQUE);
+						 0x00, 0xFF, 0x00,
+						 SDL_ALPHA_OPAQUE);
 		SDL_RenderFillRectF(renderer, &box);
 
 		// Render food
 		SDL_SetRenderDrawColor(renderer,
-                   0xFF, 0x00, 0x00,
-                   SDL_ALPHA_OPAQUE);
+						 0xFF, 0x00, 0x00,
+						 SDL_ALPHA_OPAQUE);
 		SDL_RenderFillRectF(renderer, &food);
 
 		SDL_RenderPresent(renderer);
@@ -160,5 +192,7 @@ int main(void)
 
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
+	snake_free(&snake);
 	return 0;
 }
+
