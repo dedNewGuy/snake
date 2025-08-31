@@ -213,28 +213,36 @@ int main(void)
 				case SDL_KEYDOWN:
 					switch (event.key.keysym.sym) {
 						case SDLK_LEFT:
-							is_left_pressed = true;
-							is_up_pressed = false;
-							is_down_pressed = false;
-							is_right_pressed = false;
+							if (!is_right_pressed) {
+								is_left_pressed = true;
+								is_up_pressed = false;
+								is_down_pressed = false;
+								is_right_pressed = false;
+							}
 							break;
 						case SDLK_RIGHT:
-							is_left_pressed = false;
-							is_up_pressed = false;
-							is_down_pressed = false;
-							is_right_pressed = true;
+							if (!is_left_pressed) {
+								is_left_pressed = false;
+								is_up_pressed = false;
+								is_down_pressed = false;
+								is_right_pressed = true;
+							}
 							break;
 						case SDLK_UP:
-							is_left_pressed = false;
-							is_up_pressed = true;
-							is_down_pressed = false;
-							is_right_pressed = false;
+							if (!is_down_pressed) {
+								is_left_pressed = false;
+								is_up_pressed = true;
+								is_down_pressed = false;
+								is_right_pressed = false;
+							}
 							break;
 						case SDLK_DOWN:
-							is_left_pressed = false;
-							is_up_pressed = false;
-							is_down_pressed = true;
-							is_right_pressed = false;
+							if (!is_up_pressed) {
+								is_left_pressed = false;
+								is_up_pressed = false;
+								is_down_pressed = true;
+								is_right_pressed = false;
+							}
 							break;
 						case SDLK_q:
 							running = false;
