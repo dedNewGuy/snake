@@ -52,9 +52,11 @@ int main(void)
 		.x = 0, .y = 0,
 		.w = 20, .h = 20
 	};
-	int rand_range = WIN_WIDTH / box.w; 
+	int rand_range = WIN_WIDTH / box.w - 1; 
 	food.x = (float)((rand() % rand_range) * 20);
 	food.y = (float)((rand() % rand_range) * 20);
+
+	SDL_FRect result = {};
 
 	while (running) {
 		SDL_Event event;
@@ -81,6 +83,13 @@ int main(void)
 			box.y = WIN_HEIGHT - box.h;
 		} else if (box.y > WIN_HEIGHT) {
 			box.y = 0;
+		}
+
+		if (SDL_IntersectFRect(&box,
+                            &food,
+                            &result)) {
+			food.x = (float)((rand() % rand_range) * 20);
+			food.y = (float)((rand() % rand_range) * 20);
 		}
 
 		// Clear Background
