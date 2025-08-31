@@ -52,8 +52,9 @@ int main(void)
 		.x = 0, .y = 0,
 		.w = 20, .h = 20
 	};
-	food.x = (float)(rand() % WIN_WIDTH);
-	food.y = (float)(rand() % WIN_HEIGHT);
+	int rand_range = WIN_WIDTH / box.w; 
+	food.x = (float)((rand() % rand_range) * 20);
+	food.y = (float)((rand() % rand_range) * 20);
 
 	while (running) {
 		SDL_Event event;
