@@ -121,7 +121,8 @@ int main(void)
 	SDL_Window *window = NULL;
 	SDL_Renderer *renderer = NULL;
 
-	direction_t dir = UNDEFINED;
+	direction_t curr_dir = UNDEFINED;
+	direction_t next_dir = UNDEFINED;
 
 	bool running = true;
 
@@ -173,7 +174,10 @@ int main(void)
 		snake_update_time_acc += deltatime;
 		if (snake_update_time_acc >= UPDATE_SNAKE_RATE) {
 			snake_update_body(&snake);
-			switch (dir) {
+			
+			curr_dir = next_dir;
+
+			switch (curr_dir) {
 				case DIR_LEFT:
 					snake.head.x -= box_speed;
 					break;
@@ -244,16 +248,16 @@ int main(void)
 				case SDL_KEYDOWN:
 					switch (event.key.keysym.sym) {
 						case SDLK_LEFT:
-							if (dir != DIR_RIGHT) dir = DIR_LEFT;
+							if (curr_dir != DIR_RIGHT) next_dir = DIR_LEFT;
 							break;
 						case SDLK_RIGHT:
-							if (dir != DIR_LEFT) dir = DIR_RIGHT;
+							if (curr_dir != DIR_LEFT) next_dir = DIR_RIGHT;
 							break;
 						case SDLK_UP:
-							if (dir != DIR_DOWN) dir = DIR_UP;
+							if (curr_dir != DIR_DOWN) next_dir = DIR_UP;
 							break;
 						case SDLK_DOWN:
-							if (dir != DIR_UP) dir = DIR_DOWN;
+							if (curr_dir != DIR_UP) next_dir = DIR_DOWN;
 							break;
 						case SDLK_q:
 							running = false;
