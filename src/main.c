@@ -16,8 +16,6 @@
 typedef struct snake {
 	SDL_FRect head;
 	SDL_FRect *body;
-	float head_last_x;
-	float head_last_y;
 	int body_capacity;
 	int body_count;
 } snake_t;
@@ -73,8 +71,8 @@ void snake_update_body(snake_t *snake)
         snake->body[i].y = snake->body[i - 1].y;
     }
 
-    snake->body[0].x = snake->head_last_x;
-    snake->body[0].y = snake->head_last_y;
+    snake->body[0].x = snake->head.x;
+    snake->body[0].y = snake->head.y;
 }
 
 void snake_render(SDL_Renderer *renderer, snake_t *snake)
@@ -95,6 +93,16 @@ void snake_dump(snake_t *snake)
 	SDL_FRect last_body = snake->body[snake->body_count - 1];
 	SDL_Log("Snake last body x: %f\n", last_body.x);
 	SDL_Log("Snake last body y: %f\n", last_body.y);
+}
+
+void snake_handle_body_intersect(snake_t *snake)
+{
+	SDL_FRect res = {0};
+	for (int i = 2; i < snake->body_count; ++i) {
+		if (SDL_IntersectFRect(&snake->body[i], &snake->head, &res)) {
+			SDL_Log("LOSE!");
+		}
+	}
 }
 
 int main(void)
@@ -157,8 +165,6 @@ int main(void)
 		snake_dump(&snake);
 		snake_update_time_acc += deltatime;
 		if (snake_update_time_acc >= UPDATE_SNAKE_RATE) {
-			snake.head_last_x = snake.head.x;
-			snake.head_last_y = snake.head.y;
 			snake_update_body(&snake);
 			if (is_left_pressed) snake.head.x -= box_speed;
 			if (is_right_pressed) snake.head.x += box_speed;
@@ -185,6 +191,7 @@ int main(void)
 			food.y = (float)((rand() % rand_range_y) * 20);
 			snake_append_body(&snake);
 		}
+		snake_handle_body_intersect(&snake);
 
 		// Clear Background
 		SDL_SetRenderDrawColor(renderer,
