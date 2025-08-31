@@ -1,4 +1,6 @@
 #include <stdbool.h>
+#include <stdlib.h>
+#include <time.h>
 #include <SDL2/SDL.h>
 
 #define WIN_TITLE "Snake"
@@ -12,6 +14,7 @@
 
 int main(void)
 {
+	srand(time(NULL));
 	SDL_Window *window = NULL;
 	SDL_Renderer *renderer = NULL;
 
@@ -45,6 +48,13 @@ int main(void)
 	float box_speed = box.w;
 	float snake_update_time_acc = 0;
 
+	SDL_FRect food = {
+		.x = 0, .y = 0,
+		.w = 20, .h = 20
+	};
+	food.x = (float)(rand() % WIN_WIDTH);
+	food.y = (float)(rand() % WIN_HEIGHT);
+
 	while (running) {
 		SDL_Event event;
 
@@ -72,15 +82,23 @@ int main(void)
 			box.y = 0;
 		}
 
+		// Clear Background
 		SDL_SetRenderDrawColor(renderer,
                    0x00, 0x00, 0x00,
                    SDL_ALPHA_OPAQUE);
 		SDL_RenderClear(renderer);
 
+		// Render Snake
+		SDL_SetRenderDrawColor(renderer,
+                   0x00, 0xFF, 0x00,
+                   SDL_ALPHA_OPAQUE);
+		SDL_RenderFillRectF(renderer, &box);
+
+		// Render food
 		SDL_SetRenderDrawColor(renderer,
                    0xFF, 0x00, 0x00,
                    SDL_ALPHA_OPAQUE);
-		SDL_RenderFillRectF(renderer, &box);
+		SDL_RenderFillRectF(renderer, &food);
 
 		SDL_RenderPresent(renderer);
 
