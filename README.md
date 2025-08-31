@@ -1,23 +1,24 @@
-# Snake | That Classic Game (Yeah)
+# Snake | That Classic Game
 
-## MIT License
+This is just bare minimum gameplay for snake. No fancy stuff. It
+originally just to start me going to code again by gaining that momentum.
+I'll do my best to improve my mental health.
 
-Copyright 2025 Muhammad Amin Bin Mohd Kafri
+## Build
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the “Software”), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, and to permit persons to whom the Software is furnished to do
-so, subject to the following conditions:
+**Requirements**
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+- SDL2
+- make
+- gcc
 
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+```
+make all
+```
+
+It will generate `snake` executable. You can run it with
+```
+make run
+or
+./snake
+```
