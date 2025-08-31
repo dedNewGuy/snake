@@ -5,8 +5,8 @@
 #include <SDL2/SDL.h>
 
 #define WIN_TITLE "Snake"
-#define WIN_WIDTH 800
-#define WIN_HEIGHT 600
+#define WIN_WIDTH 600
+#define WIN_HEIGHT 400
 
 #define FPS 60
 #define FRAMERATE (1000 / FPS)
