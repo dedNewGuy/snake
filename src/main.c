@@ -8,6 +8,8 @@
 #define FPS 60
 #define FRAMERATE (1000 / FPS)
 
+#define UPDATE_SNAKE_RATE 0.25
+
 int main(void)
 {
 	SDL_Window *window = NULL;
@@ -37,10 +39,11 @@ int main(void)
 	SDL_SetWindowTitle(window, WIN_TITLE);
 
 	SDL_FRect box = {
-		.x = 10, .y = 10,
+		.x = 0, .y = 0,
 		.w = 20, .h = 20
 	};
-	float box_speed = 200;
+	float box_speed = box.w;
+	float snake_update_time_acc = 0;
 
 	while (running) {
 		SDL_Event event;
@@ -50,10 +53,14 @@ int main(void)
 		deltatime = (SDL_GetTicks() - last_frame_tick) / 1000.0f;
 		last_frame_tick = SDL_GetTicks();
 
-		if (is_left_pressed) box.x -= box_speed * deltatime;
-		if (is_right_pressed) box.x += box_speed * deltatime;
-		if (is_up_pressed) box.y -= box_speed * deltatime;
-		if (is_down_pressed) box.y += box_speed * deltatime;
+		snake_update_time_acc += deltatime;
+		if (snake_update_time_acc >= UPDATE_SNAKE_RATE) {
+			if (is_left_pressed) box.x -= box_speed;
+			if (is_right_pressed) box.x += box_speed;
+			if (is_up_pressed) box.y -= box_speed;
+			if (is_down_pressed) box.y += box_speed;
+			snake_update_time_acc = 0;
+		}
 
 		SDL_SetRenderDrawColor(renderer,
                    0x00, 0x00, 0x00,
@@ -76,15 +83,27 @@ int main(void)
 					switch (event.key.keysym.sym) {
 						case SDLK_LEFT:
 							is_left_pressed = true;
+							is_up_pressed = false;
+							is_down_pressed = false;
+							is_right_pressed = false;
 							break;
 						case SDLK_RIGHT:
+							is_left_pressed = false;
+							is_up_pressed = false;
+							is_down_pressed = false;
 							is_right_pressed = true;
 							break;
 						case SDLK_UP:
+							is_left_pressed = false;
 							is_up_pressed = true;
+							is_down_pressed = false;
+							is_right_pressed = false;
 							break;
 						case SDLK_DOWN:
+							is_left_pressed = false;
+							is_up_pressed = false;
 							is_down_pressed = true;
+							is_right_pressed = false;
 							break;
 						case SDLK_q:
 							running = false;
@@ -94,22 +113,22 @@ int main(void)
 					}
 					break;
 				case SDL_KEYUP:
-					switch (event.key.keysym.sym) {
-						case SDLK_LEFT:
-							is_left_pressed = false;
-							break;
-						case SDLK_RIGHT:
-							is_right_pressed = false;
-							break;
-						case SDLK_UP:
-							is_up_pressed = false;
-							break;
-						case SDLK_DOWN:
-							is_down_pressed = false;
-							break;
-						default:
-							break;
-					}
+					// switch (event.key.keysym.sym) {
+					// 	case SDLK_LEFT:
+					// 		is_left_pressed = false;
+					// 		break;
+					// 	case SDLK_RIGHT:
+					// 		is_right_pressed = false;
+					// 		break;
+					// 	case SDLK_UP:
+					// 		is_up_pressed = false;
+					// 		break;
+					// 	case SDLK_DOWN:
+					// 		is_down_pressed = false;
+					// 		break;
+					// 	default:
+					// 		break;
+					// }
 					break;
 				default:
 					break;
