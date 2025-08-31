@@ -62,6 +62,16 @@ int main(void)
 			snake_update_time_acc = 0;
 		}
 
+		if (box.x < 0) {
+			box.x = WIN_WIDTH - box.w;
+		} else if (box.x > WIN_WIDTH) {
+			box.x = 0;
+		} else if (box.y < 0) {
+			box.y = WIN_HEIGHT - box.h;
+		} else if (box.y > WIN_HEIGHT) {
+			box.y = 0;
+		}
+
 		SDL_SetRenderDrawColor(renderer,
                    0x00, 0x00, 0x00,
                    SDL_ALPHA_OPAQUE);
@@ -113,22 +123,6 @@ int main(void)
 					}
 					break;
 				case SDL_KEYUP:
-					// switch (event.key.keysym.sym) {
-					// 	case SDLK_LEFT:
-					// 		is_left_pressed = false;
-					// 		break;
-					// 	case SDLK_RIGHT:
-					// 		is_right_pressed = false;
-					// 		break;
-					// 	case SDLK_UP:
-					// 		is_up_pressed = false;
-					// 		break;
-					// 	case SDLK_DOWN:
-					// 		is_down_pressed = false;
-					// 		break;
-					// 	default:
-					// 		break;
-					// }
 					break;
 				default:
 					break;
