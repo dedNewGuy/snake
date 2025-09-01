@@ -29,7 +29,7 @@ typedef struct snake {
 	int body_count;
 } snake_t;
 
-snake_t snake_new()
+snake_t snake_new(int capacity)
 {
 	snake_t snake = {0};
 	snake.head = (SDL_FRect) {
@@ -37,7 +37,7 @@ snake_t snake_new()
 		.w = 20, .h = 20
 	};
 
-	snake.body_capacity = 20;
+	snake.body_capacity = capacity;
 	snake.body_count = 0;
 	SDL_FRect *body = calloc(snake.body_capacity, sizeof(SDL_FRect));
 	assert(body != NULL);
@@ -55,7 +55,7 @@ void snake_append_body(snake_t *snake)
 {
 	if (snake->body_count + 1 >= snake->body_capacity) {
 		snake->body_capacity *= 2;
-		SDL_FRect *body_realloc = realloc(snake->body, sizeof(snake->body_capacity));
+		SDL_FRect *body_realloc = realloc(snake->body, snake->body_capacity * sizeof(SDL_FRect));
 		assert(body_realloc != NULL);
 		snake->body = body_realloc;
 	}
@@ -142,7 +142,7 @@ int main(void)
 	}
 	SDL_SetWindowTitle(window, WIN_TITLE);
 
-	snake_t snake = snake_new();
+	snake_t snake = snake_new(20);
 
 	SDL_FRect box = {
 		.x = 0, .y = 0,
